@@ -1,0 +1,26 @@
+{
+  "name": "devora",
+  "version": "0.1.0",
+  "description": "AI-native Developer Relations Intelligence Platform",
+  "license": "AGPL-3.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/sdk-typescript",
+    "packages/shared-types"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "build": "bun run --filter '*' build",
+    "lint": "bun run --filter '*' lint",
+    "typecheck": "bun run --filter '*' typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "bun-types": "latest",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

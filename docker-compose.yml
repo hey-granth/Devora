@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./apps/api
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    volumes:
+      - ./apps/api/src:/app/src
+      - ./apps/api/alembic:/app/alembic
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+  worker:
+    build: ./apps/api
+    env_file: .env
+    depends_on:
+      - redis
+    volumes:
+      - ./apps/api/src:/app/src
+      - ./packages:/app/packages
+    command: python -m rq worker --url ${REDIS_URL} devora
+
+  scheduler:
+    build: ./apps/api
+    env_file: .env
+    depends_on:
+      - redis
+    volumes:
+      - ./apps/api/src:/app/src
+      - ./scripts:/app/scripts
+    command: python -m scripts.scheduler
+
+  web:
+    build: ./apps/web
+    env_file: apps/web/.env.local
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/web/app:/app/app
+      - ./apps/web/components:/app/components
+      - ./apps/web/lib:/app/lib
+      - ./apps/web/stores:/app/stores
+      - ./apps/web/types:/app/types
+    command: bun run dev
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
