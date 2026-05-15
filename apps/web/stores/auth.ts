@@ -21,6 +21,7 @@ interface AuthState {
   // State
   user: User | null
   organization: Organization | null
+  accessToken: string | null
   isAuthenticated: boolean
   isLoading: boolean
   
@@ -29,6 +30,7 @@ interface AuthState {
   setOrganization: (org: Organization | null) => void
   login: (user: User, organization: Organization) => void
   logout: () => void
+  refreshToken: () => Promise<boolean>
   setLoading: (loading: boolean) => void
 }
 
@@ -38,6 +40,7 @@ export const useAuthStore = create<AuthState>()(
       // Initial state
       user: null,
       organization: null,
+      accessToken: null,
       isAuthenticated: false,
       isLoading: false,
       
@@ -55,9 +58,11 @@ export const useAuthStore = create<AuthState>()(
         set({
           user: null,
           organization: null,
+          accessToken: null,
           isAuthenticated: false,
           isLoading: false,
         }),
+      refreshToken: async () => false,
       setLoading: (isLoading) => set({ isLoading }),
     }),
     {
@@ -65,6 +70,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         organization: state.organization,
+        accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,
       }),
     }

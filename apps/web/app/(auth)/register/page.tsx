@@ -39,7 +39,12 @@ export default function RegisterPage() {
   const onSubmit = (data: RegisterFormData) => {
     const { confirm_password, ...registerData } = data
     setError('')
-    registerMutation.mutate(registerData, {
+    registerMutation.trigger({
+      email: registerData.email,
+      password: registerData.password,
+      org_name: registerData.org_name,
+      org_slug: registerData.org_slug,
+    }, {
       onSuccess: () => {
         router.push('/dashboard')
       },
@@ -59,7 +64,7 @@ export default function RegisterPage() {
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
             <Link
-              href="/auth/login"
+              href="/login"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
               sign in to your existing account
@@ -157,10 +162,10 @@ export default function RegisterPage() {
           <div>
             <button
               type="submit"
-              disabled={registerMutation.isPending}
+              disabled={registerMutation.isMutating}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {registerMutation.isPending ? 'Creating account...' : 'Create account'}
+              {registerMutation.isMutating ? 'Creating account...' : 'Create account'}
             </button>
           </div>
         </form>

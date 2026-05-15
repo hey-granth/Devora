@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   const onSubmit = (data: LoginFormData) => {
     setError('')
-    login.mutate(data, {
+    login.trigger({ email: data.email, password: data.password }, {
       onSuccess: () => {
         router.push('/dashboard')
       },
@@ -50,7 +50,7 @@ export default function LoginPage() {
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
             <Link
-              href="/auth/register"
+              href="/register"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
               create a new account
@@ -101,10 +101,10 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              disabled={login.isPending}
+              disabled={login.isMutating}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {login.isPending ? 'Signing in...' : 'Sign in'}
+              {login.isMutating ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>

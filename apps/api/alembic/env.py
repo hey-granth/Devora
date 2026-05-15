@@ -11,8 +11,9 @@ from alembic import context
 # Add the src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+from src.models import *  # noqa: F401, F403 — required for Alembic to detect all tables
+from sqlmodel import SQLModel
 from src.config import settings
-from src.models import *  # Import all models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

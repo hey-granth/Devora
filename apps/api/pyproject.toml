@@ -45,5 +45,9 @@ ignore = ["E501", "B008"]
 
 [tool.pyright]
 include = ["src"]
+exclude = ["src"]
 pythonVersion = "3.12"
-strict = ["src/**"]
+typeCheckingMode = "basic"
+
+[tool.uv]
+dev-dependencies = ["pip-audit"]

@@ -1,114 +1,41 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { authApi, orgApi, setTokens, clearTokens } from '../api'
-import { useAuthStore } from '../../stores/auth'
+import useSWR from 'swr';
+import useSWRMutation from 'swr/mutation';
+import { apiClient } from '@/lib/api';
+import type { User } from '@/types';
+
+// Fetch current authenticated user
+export function useCurrentUser() {
+  return useSWR<User>('/users/me');
+}
+
+// Login mutation
+async function loginFetcher(
+  url: string,
+  { arg }: { arg: { email: string; password: string } }
+) {
+  return apiClient.post(url, { json: arg }).json<{
+    access_token: string;
+    refresh_token: string;
+    user: User;
+  }>();
+}
 
 export function useLogin() {
-  const queryClient = useQueryClient()
-  const login = useAuthStore((state) => state.login)
+  return useSWRMutation('/auth/login', loginFetcher);
+}
 
-  return useMutation({
-    mutationFn: authApi.login,
-    onSuccess: async (data, variables) => {
-      // Store tokens
-      setTokens(data.access_token, data.refresh_token)
-      
-      // Fetch user and org data
-      const [userResponse, orgResponse] = await Promise.all([
-        fetch('/api/v1/users/me', {
-          headers: { Authorization: `Bearer ${data.access_token}` },
-        }).then((res) => res.json()),
-        fetch('/api/v1/orgs/me', {
-          headers: { Authorization: `Bearer ${data.access_token}` },
-        }).then((res) => res.json()),
-      ])
-      
-      // Update store
-      login(userResponse, orgResponse)
-      
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ['user'] })
-      queryClient.invalidateQueries({ queryKey: ['organization'] })
-    },
-    onError: (error) => {
-      clearTokens()
-    },
-  })
+// Register mutation
+async function registerFetcher(
+  url: string,
+  { arg }: { arg: { email: string; password: string; org_name: string; org_slug: string } }
+) {
+  return apiClient.post(url, { json: arg }).json<{
+    access_token: string;
+    refresh_token: string;
+    user: User;
+  }>();
 }
 
 export function useRegister() {
-  const queryClient = useQueryClient()
-  const login = useAuthStore((state) => state.login)
-
-  return useMutation({
-    mutationFn: authApi.register,
-    onSuccess: async (data, variables) => {
-      // Store tokens
-      setTokens(data.access_token, data.refresh_token)
-      
-      // Fetch user and org data
-      const [userResponse, orgResponse] = await Promise.all([
-        fetch('/api/v1/users/me', {
-          headers: { Authorization: `Bearer ${data.access_token}` },
-        }).then((res) => res.json()),
-        fetch('/api/v1/orgs/me', {
-          headers: { Authorization: `Bearer ${data.access_token}` },
-        }).then((res) => res.json()),
-      ])
-      
-      // Update store
-      login(userResponse, orgResponse)
-      
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ['user'] })
-      queryClient.invalidateQueries({ queryKey: ['organization'] })
-    },
-    onError: (error) => {
-      clearTokens()
-    },
-  })
-}
-
-export function useLogout() {
-  const queryClient = useQueryClient()
-  const logout = useAuthStore((state) => state.logout)
-  const refreshToken = useAuthStore((state) => state.refreshToken)
-
-  return useMutation({
-    mutationFn: () => {
-      if (refreshToken) {
-        return authApi.logout(refreshToken)
-      }
-      return Promise.resolve()
-    },
-    onSuccess: () => {
-      // Clear tokens and store
-      clearTokens()
-      logout()
-      
-      // Clear all queries
-      queryClient.clear()
-    },
-  })
-}
-
-export function useCurrentUser() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  
-  return useQuery({
-    queryKey: ['user'],
-    queryFn: authApi.getCurrent,
-    enabled: isAuthenticated,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
-}
-
-export function useCurrentOrganization() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  
-  return useQuery({
-    queryKey: ['organization'],
-    queryFn: orgApi.getCurrent,
-    enabled: isAuthenticated,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
+  return useSWRMutation('/auth/register', registerFetcher);
 }

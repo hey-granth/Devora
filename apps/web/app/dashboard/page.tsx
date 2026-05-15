@@ -1,14 +1,12 @@
 'use client'
 
-import { useAuthStore } from '../../../stores/auth'
-import { useCurrentOrganization } from '../../../lib/queries/auth'
+import { useAuthStore } from '../../stores/auth'
 
 export default function DashboardPage() {
   const user = useAuthStore((state) => state.user)
   const organization = useAuthStore((state) => state.organization)
-  const { data: orgData, isLoading: orgLoading } = useCurrentOrganization()
-
-  const currentOrg = organization || orgData
+  const currentOrg = organization
+  const orgLoading = false
 
   return (
     <div className="space-y-6">

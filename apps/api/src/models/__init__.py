@@ -1,9 +1,9 @@
-from .developer import Developer
-from .document import Document
-from .event import Event
-from .friction_signal import FrictionSignal
 from .organization import Organization
 from .user import User
+from .developer import Developer
+from .event import Event
+from .document import Document
+from .friction_signal import FrictionSignal
 
 __all__ = [
     "Organization",

@@ -3,26 +3,15 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useAuthStore } from '../../../stores/auth'
-import { useLogout } from '../../../lib/queries/auth'
-import {
-  HomeIcon,
-  UserGroupIcon,
-  ChartBarIcon,
-  ExclamationTriangleIcon,
-  DocumentTextIcon,
-  CogIcon,
-  Bars3Icon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
+import { useAuthStore } from '../../stores/auth'
 
 const navigation = [
-  { name: 'Overview', href: '/dashboard', icon: HomeIcon },
-  { name: 'Developers', href: '/dashboard/developers', icon: UserGroupIcon },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
-  { name: 'Friction', href: '/dashboard/friction', icon: ExclamationTriangleIcon },
-  { name: 'Documents', href: '/dashboard/documents', icon: DocumentTextIcon },
-  { name: 'Settings', href: '/dashboard/settings', icon: CogIcon },
+  { name: 'Overview', href: '/dashboard' },
+  { name: 'Developers', href: '/dashboard/developers' },
+  { name: 'Analytics', href: '/dashboard/analytics' },
+  { name: 'Friction', href: '/dashboard/friction' },
+  { name: 'Documents', href: '/dashboard/documents' },
+  { name: 'Settings', href: '/dashboard/settings' },
 ]
 
 export default function DashboardLayout({
@@ -34,10 +23,10 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const user = useAuthStore((state) => state.user)
   const organization = useAuthStore((state) => state.organization)
-  const logout = useLogout()
+  const logout = useAuthStore((state) => state.logout)
 
   const handleLogout = () => {
-    logout.mutate()
+    logout()
   }
 
   return (
@@ -52,7 +41,7 @@ export default function DashboardLayout({
               onClick={() => setSidebarOpen(false)}
               className="text-white hover:text-gray-200"
             >
-              <XMarkIcon className="h-6 w-6" />
+              <span className="text-lg leading-none">X</span>
             </button>
           </div>
           <nav className="flex-1 px-2 py-4 space-y-1">
@@ -68,11 +57,7 @@ export default function DashboardLayout({
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
-                  <item.icon
-                    className={`mr-3 h-5 w-5 ${
-                      isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'
-                    }`}
-                  />
+                  <span className="mr-3 h-5 w-5 text-center">•</span>
                   {item.name}
                 </Link>
               )
@@ -100,11 +85,7 @@ export default function DashboardLayout({
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
-                  <item.icon
-                    className={`mr-3 h-5 w-5 ${
-                      isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'
-                    }`}
-                  />
+                  <span className="mr-3 h-5 w-5 text-center">•</span>
                   {item.name}
                 </Link>
               )
@@ -122,7 +103,7 @@ export default function DashboardLayout({
             className="lg:hidden px-4 text-gray-500 border-r border-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
             onClick={() => setSidebarOpen(true)}
           >
-            <Bars3Icon className="h-6 w-6" />
+            <span className="text-lg leading-none">≡</span>
           </button>
           
           <div className="flex-1 flex justify-between items-center px-4 lg:px-6">
@@ -138,10 +119,10 @@ export default function DashboardLayout({
               </span>
               <button
                 onClick={handleLogout}
-                disabled={logout.isPending}
+                disabled={false}
                 className="text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50"
               >
-                {logout.isPending ? 'Signing out...' : 'Sign out'}
+                Sign out
               </button>
             </div>
           </div>
